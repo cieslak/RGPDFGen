@@ -1,12 +1,22 @@
 import Foundation
 import Yams
+import ZIPFoundation
 
 class RGParser {
     static func parse(filePath: String) -> RowsGarden? {
-        let yamlString = try! String(contentsOfFile: filePath, encoding: .utf8)
+        var path = URL(fileURLWithPath: filePath)
+        if (filePath as NSString).pathExtension == "rgz" {
+            let fromURL = URL(fileURLWithPath: filePath)
+            let toURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString)")
+            try? FileManager.default.unzipItem(at: fromURL, to: toURL)
+            let unzipped = try? FileManager.default.contentsOfDirectory(at: toURL, includingPropertiesForKeys: nil)
+            guard let unzipped, let file = unzipped.first else { return nil }
+            path = file
+        }
+        let yamlString = try! String(contentsOf: path, encoding: .utf8)
         let yamlStringArray = yamlString.components(separatedBy: "\n")
         let correctedYAMLStringArray = yamlStringArray.map { line in
-            var fixedLine = line
+            var fixedLine = line.trimmingCharacters(in: .newlines)
             if let colonMatch = fixedLine.firstMatch(of: /^( *[^:]+:)([^ ]..+)$/) {
                 fixedLine = "\(colonMatch.1) \(colonMatch.2)"
             }
