@@ -6,8 +6,8 @@ import CoreGraphics
 struct GardenDrawer {
     static func drawGarden(context: CGContext, rect: CGRect) {
         let light = CGColor(gray: 1.0, alpha: 1.0)
-        let medium = CGColor(gray: 0.8, alpha: 1.0)
-        let dark = CGColor(gray: 0.9, alpha: 1.0)
+        let medium = CGColor(gray: 0.9, alpha: 1.0)
+        let dark = CGColor(gray: 0.8, alpha: 1.0)
         let stroke = CGColor(gray: 0.0, alpha: 1.0)
         let colors = [[],
                       [light, light, light, medium, medium, medium, light, light, light, medium, medium, medium, light, light, light],
