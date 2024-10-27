@@ -3,6 +3,7 @@
 import Foundation
 import ArgumentParser
 import CoreGraphics
+import CoreText
 
 @main
 struct RGPDFGen: ParsableCommand {
@@ -24,14 +25,25 @@ struct RGPDFGen: ParsableCommand {
             throw RuntimeError("Couldn't create CGContext")
         }
         context.beginPDFPage(nil)
+        //draw garden
+        context.saveGState()
         context.translateBy(x: 0.0, y: h)
         context.scaleBy(x: 1.0, y: -1.0)
-        GardenDrawer.drawGarden(context: context, rect: CGRect(origin: CGPoint(x: 8, y: 8), size: CGSize(width: 612 - 16, height: 500)))
-        context.endPDFPage()
-        context.closePDF()
-
-
-
+        GardenDrawer.drawGarden(context: context, rect: CGRect(origin: CGPoint(x: 100, y: 100), size: CGSize(width: 612 - 200, height: 500)))
+        context.restoreGState()
+        // draw title
+        var x = 8.0
+        var y = 8.0
+        if let title = garden.title {
+            var titleString = NSAttributedString(string: title)
+            let path = CGMutablePath()
+            path.addRect(CGRect(x: 16, y: 200, width: w - 16, height: 40))
+            let framesetter = CTFramesetterCreateWithAttributedString(titleString as CFAttributedString)
+            let frame = CTFramesetterCreateFrame(framesetter, CFRange(location: 0, length: titleString.length), path, nil)
+            CTFrameDraw(frame, context)
+            context.endPDFPage()
+            context.closePDF()
+        }
     }
 }
 

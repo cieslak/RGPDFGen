@@ -53,7 +53,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-i ~/Desktop/1142.rg"
+            argument = "-i ~/Desktop/rb.rg"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
