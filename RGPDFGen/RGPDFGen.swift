@@ -25,13 +25,7 @@ struct RGPDFGen: ParsableCommand {
             throw RuntimeError("Couldn't create CGContext")
         }
         context.beginPDFPage(nil)
-        //draw garden
-        context.saveGState()
-        context.translateBy(x: 0.0, y: h)
-        context.scaleBy(x: 1.0, y: -1.0)
-        GardenDrawer.drawGarden(context: context, rect: CGRect(origin: CGPoint(x: 100, y: 100), size: CGSize(width: 612 - 200, height: 500)))
-        context.restoreGState()
-        // draw title
+        GardenDrawer.drawGarden(context: context, rect: CGRect(origin: CGPoint(x: 50, y: h - 500), size: CGSize(width: 612 - 100, height: 500)))
         var x = 8.0
         var y = 8.0
         if let title = garden.title {
