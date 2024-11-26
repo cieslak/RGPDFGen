@@ -63,14 +63,15 @@ struct RGPDFGen: ParsableCommand {
 
         let md = MarkdownParser(font: NSFont(name: "HelveticaNeue", size: 12)!)
         let rowsIndent = NSMutableParagraphStyle()
-        rowsIndent.headIndent = 22
-        let rowsIndentAttrs = [ NSAttributedString.Key.paragraphStyle: rowsIndent]
+        rowsIndent.headIndent = 24
+        rowsIndent.tabStops = [NSTextTab(type: .leftTabStopType, location: 24)]
+        let rowsIndentAttrs = [NSAttributedString.Key.paragraphStyle: rowsIndent]
 
         let rowsHeaders = ["A", "B", "C", "D", "E", "F", "G", "H"]
         let rowsString = NSMutableAttributedString(string: "ROWS\n", attributes: boldAttrs)
         for (i, row) in garden.rows.enumerated() {
             for (j, entry) in row.enumerated() {
-                let header = NSAttributedString(string: "\(rowsHeaders[i])\(j + 1). ", attributes: boldAttrs)
+                let header = NSAttributedString(string: "\(rowsHeaders[i])\(j + 1).\t", attributes: boldAttrs)
                 let clue = md.parse("\(entry.clue)\n")
                 rowsString.append(header)
                 rowsString.append(clue)
@@ -79,27 +80,28 @@ struct RGPDFGen: ParsableCommand {
         rowsString.addAttributes(rowsIndentAttrs, range: NSRange(location: 0, length: rowsString.length))
 
         let bloomsIndent = NSMutableParagraphStyle()
-        bloomsIndent.headIndent = 8
-        let bloomsIndentAttrs = [ NSAttributedString.Key.paragraphStyle: bloomsIndent]
+        bloomsIndent.headIndent = 10
+        bloomsIndent.tabStops = [NSTextTab(type: .leftTabStopType, location: 10)]
+        let bloomsIndentAttrs = [NSAttributedString.Key.paragraphStyle: bloomsIndent]
 
         let bloomsString = NSMutableAttributedString(string: "\nLIGHT\n", attributes: boldAttrs)
         let light = sortHard(garden.light)
         for clue in light {
-            let parsed = NSMutableAttributedString(attributedString: md.parse("• \(clue)\n"))
+            let parsed = NSMutableAttributedString(attributedString: md.parse("•\t\(clue)\n"))
             parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
             bloomsString.append(parsed)
         }
         bloomsString.append(NSAttributedString(string: "\nMEDIUM\n", attributes: boldAttrs))
         let medium = sortHard(garden.medium)
         for clue in medium {
-            let parsed = NSMutableAttributedString(attributedString: md.parse("• \(clue)\n"))
+            let parsed = NSMutableAttributedString(attributedString: md.parse("•\t\(clue)\n"))
             parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
             bloomsString.append(parsed)
         }
         bloomsString.append(NSAttributedString(string: "\nDARK\n", attributes: boldAttrs))
         let dark = sortHard(garden.dark)
         for clue in dark {
-            let parsed = NSMutableAttributedString(attributedString: md.parse("• \(clue)\n"))
+            let parsed = NSMutableAttributedString(attributedString: md.parse("•\t\(clue)\n"))
             parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
             bloomsString.append(parsed)
         }
