@@ -11,7 +11,7 @@ import MarkdownKit
 struct RGPDFGen: ParsableCommand {
     @Option(name: [.short, .customLong("input")], help: "Input file path") var inputFile: String
     @Option(name: [.short, .customLong("output")], help: "Output file path") var outputFile: String
-    @Option(name: [.short, .customLong("easy")], help: "Is easy level puzzle") var easy: Bool = false
+    @Option(name: [.short, .customLong("easy")], help: "Is easy level puzzle") var easy: Bool = true
 
     mutating func run() throws {
         let expandedInput = (inputFile as NSString).expandingTildeInPath
@@ -41,27 +41,24 @@ struct RGPDFGen: ParsableCommand {
             } else {
                 header.append(" • Full-Bodied Edition")
             }
-            let attributes = [
+            let titleAttrs = [
                 NSAttributedString.Key.font : NSFont(name: "HighwayGothic", size: 16)!,
             ]
-            let headerSize = header.size(withAttributes: attributes)
-            let titleString = NSAttributedString(string: header, attributes: attributes)
+            let headerSize = header.size(withAttributes: titleAttrs)
+            let titleString = NSAttributedString(string: header, attributes: titleAttrs)
             let path = CGMutablePath()
             path.addRect(CGRect(x: (w - headerSize.width) / 2, y: h - 70, width: w - 32, height: 40))
             let framesetter = CTFramesetterCreateWithAttributedString(titleString as CFAttributedString)
-            let frame = CTFramesetterCreateFrame(framesetter, CFRange(location: 0, length: titleString.length), path, nil)
+            let frame = CTFramesetterCreateFrame(framesetter, CFRange(location: 0, length: 0), path, nil)
             CTFrameDraw(frame, context)
 
-            let regAttrs = [
-                NSAttributedString.Key.font : NSFont(name: "HelveticaNeue", size: 12)!
-            ]
             let boldAttrs = [
                 NSAttributedString.Key.font : NSFont(name: "HelveticaNeue-Bold", size: 12)!
             ]
-            let rowsPath = CGMutablePath()
-            rowsPath.addRect(CGRect(x: 32, y: 32, width: (w - 64) / 2 , height: 360).insetBy(dx: 8, dy: 0))
-            let bloomsPath = CGMutablePath()
-            bloomsPath.addRect(CGRect(x: 32 + ((w - 64) / 2), y: 32, width: (w - 64) / 2 , height: 360).insetBy(dx: 8, dy: 0))
+            let leftPath = CGMutablePath()
+            leftPath.addRect(CGRect(x: 32, y: 64, width: (w - 64) / 2 , height: 360 - 32).insetBy(dx: 8, dy: 0))
+            let rightPath = CGMutablePath()
+            rightPath.addRect(CGRect(x: 32 + ((w - 64) / 2), y: 64, width: (w - 64) / 2 , height: 360 - 32).insetBy(dx: 8, dy: 0))
 
             let md = MarkdownParser(font: NSFont(name: "HelveticaNeue", size: 12)!)
             let rowsIndent = NSMutableParagraphStyle()
@@ -84,33 +81,34 @@ struct RGPDFGen: ParsableCommand {
             bloomsIndent.headIndent = 8
             let bloomsIndentAttrs = [ NSAttributedString.Key.paragraphStyle: bloomsIndent]
 
-            let bloomString = NSMutableAttributedString(string: "LIGHT\n", attributes: boldAttrs)
+            let bloomsString = NSMutableAttributedString(string: "\nLIGHT\n", attributes: boldAttrs)
             let light = sortHard(garden.light)
             for clue in light {
                 let parsed = NSMutableAttributedString(attributedString: md.parse("• \(clue)\n"))
                 parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
-                bloomString.append(parsed)
+                bloomsString.append(parsed)
             }
-            bloomString.append(NSAttributedString(string: "MEDIUM\n", attributes: boldAttrs))
+            bloomsString.append(NSAttributedString(string: "\nMEDIUM\n", attributes: boldAttrs))
             let medium = sortHard(garden.medium)
             for clue in medium {
                 let parsed = NSMutableAttributedString(attributedString: md.parse("• \(clue)\n"))
                 parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
-                bloomString.append(parsed)
+                bloomsString.append(parsed)
             }
-            bloomString.append(NSAttributedString(string: "DARK\n", attributes: boldAttrs))
+            bloomsString.append(NSAttributedString(string: "\nDARK\n", attributes: boldAttrs))
             let dark = sortHard(garden.dark)
             for clue in dark {
                 let parsed = NSMutableAttributedString(attributedString: md.parse("• \(clue)\n"))
                 parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
-                bloomString.append(parsed)
+                bloomsString.append(parsed)
             }
 
+            rowsString.append(bloomsString)
             let rowsFramesetter = CTFramesetterCreateWithAttributedString(rowsString as CFAttributedString)
-            let rowsFrame = CTFramesetterCreateFrame(rowsFramesetter, CFRange(location: 0, length: rowsString.length), rowsPath, nil)
+            let rowsFrame = CTFramesetterCreateFrame(rowsFramesetter, CFRange(location: 0, length: 0), leftPath, nil)
             CTFrameDraw(rowsFrame, context)
-            let bloomsFramesetter = CTFramesetterCreateWithAttributedString(bloomString as CFAttributedString)
-            let bloomsFrame = CTFramesetterCreateFrame(bloomsFramesetter, CFRange(location: 0, length: bloomString.length), bloomsPath, nil)
+            let frameRange = CTFrameGetVisibleStringRange(rowsFrame)
+            let bloomsFrame = CTFramesetterCreateFrame(rowsFramesetter, CFRange(location: frameRange.length, length: 0), rightPath, nil)
             CTFrameDraw(bloomsFrame, context)
             context.endPDFPage()
             context.closePDF()
