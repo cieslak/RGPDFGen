@@ -48,71 +48,73 @@ struct RGPDFGen: ParsableCommand {
             let titleString = NSAttributedString(string: header, attributes: titleAttrs)
             let path = CGMutablePath()
             path.addRect(CGRect(x: (w - headerSize.width) / 2, y: h - 70, width: w - 32, height: 40))
-            let framesetter = CTFramesetterCreateWithAttributedString(titleString as CFAttributedString)
-            let frame = CTFramesetterCreateFrame(framesetter, CFRange(location: 0, length: 0), path, nil)
-            CTFrameDraw(frame, context)
-
-            let boldAttrs = [
-                NSAttributedString.Key.font : NSFont(name: "HelveticaNeue-Bold", size: 12)!
-            ]
-            let leftPath = CGMutablePath()
-            leftPath.addRect(CGRect(x: 32, y: 64, width: (w - 64) / 2 , height: 360 - 32).insetBy(dx: 8, dy: 0))
-            let rightPath = CGMutablePath()
-            rightPath.addRect(CGRect(x: 32 + ((w - 64) / 2), y: 64, width: (w - 64) / 2 , height: 360 - 32).insetBy(dx: 8, dy: 0))
-
-            let md = MarkdownParser(font: NSFont(name: "HelveticaNeue", size: 12)!)
-            let rowsIndent = NSMutableParagraphStyle()
-            rowsIndent.headIndent = 22
-            let rowsIndentAttrs = [ NSAttributedString.Key.paragraphStyle: rowsIndent]
-
-            let rowsHeaders = ["A", "B", "C", "D", "E", "F", "G", "H"]
-            let rowsString = NSMutableAttributedString(string: "ROWS\n", attributes: boldAttrs)
-            for (i, row) in garden.rows.enumerated() {
-                for (j, entry) in row.enumerated() {
-                    let header = NSAttributedString(string: "\(rowsHeaders[i])\(j + 1). ", attributes: boldAttrs)
-                    let clue = md.parse("\(entry.clue)\n")
-                    rowsString.append(header)
-                    rowsString.append(clue)
-                }
-            }
-            rowsString.addAttributes(rowsIndentAttrs, range: NSRange(location: 0, length: rowsString.length))
-
-            let bloomsIndent = NSMutableParagraphStyle()
-            bloomsIndent.headIndent = 8
-            let bloomsIndentAttrs = [ NSAttributedString.Key.paragraphStyle: bloomsIndent]
-
-            let bloomsString = NSMutableAttributedString(string: "\nLIGHT\n", attributes: boldAttrs)
-            let light = sortHard(garden.light)
-            for clue in light {
-                let parsed = NSMutableAttributedString(attributedString: md.parse("• \(clue)\n"))
-                parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
-                bloomsString.append(parsed)
-            }
-            bloomsString.append(NSAttributedString(string: "\nMEDIUM\n", attributes: boldAttrs))
-            let medium = sortHard(garden.medium)
-            for clue in medium {
-                let parsed = NSMutableAttributedString(attributedString: md.parse("• \(clue)\n"))
-                parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
-                bloomsString.append(parsed)
-            }
-            bloomsString.append(NSAttributedString(string: "\nDARK\n", attributes: boldAttrs))
-            let dark = sortHard(garden.dark)
-            for clue in dark {
-                let parsed = NSMutableAttributedString(attributedString: md.parse("• \(clue)\n"))
-                parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
-                bloomsString.append(parsed)
-            }
-
-            rowsString.append(bloomsString)
-            let rowsFramesetter = CTFramesetterCreateWithAttributedString(rowsString as CFAttributedString)
-            let rowsFrame = CTFramesetterCreateFrame(rowsFramesetter, CFRange(location: 0, length: 0), leftPath, nil)
-            CTFrameDraw(rowsFrame, context)
-            let frameRange = CTFrameGetVisibleStringRange(rowsFrame)
-            let bloomsFrame = CTFramesetterCreateFrame(rowsFramesetter, CFRange(location: frameRange.length, length: 0), rightPath, nil)
-            CTFrameDraw(bloomsFrame, context)
-            context.endPDFPage()
-            context.closePDF()
+            let titleFramesetter = CTFramesetterCreateWithAttributedString(titleString as CFAttributedString)
+            let titleFrame = CTFramesetterCreateFrame(titleFramesetter, CFRange(location: 0, length: 0), path, nil)
+            CTFrameDraw(titleFrame, context)
         }
+        
+        let boldAttrs = [
+            NSAttributedString.Key.font : NSFont(name: "HelveticaNeue-Bold", size: 12)!
+        ]
+        let leftPath = CGMutablePath()
+        leftPath.addRect(CGRect(x: 32, y: 64, width: (w - 64) / 2 , height: 360 - 32).insetBy(dx: 8, dy: 0))
+        let rightPath = CGMutablePath()
+        rightPath.addRect(CGRect(x: 32 + ((w - 64) / 2), y: 64, width: (w - 64) / 2 , height: 360 - 32).insetBy(dx: 8, dy: 0))
+
+        let md = MarkdownParser(font: NSFont(name: "HelveticaNeue", size: 12)!)
+        let rowsIndent = NSMutableParagraphStyle()
+        rowsIndent.headIndent = 22
+        let rowsIndentAttrs = [ NSAttributedString.Key.paragraphStyle: rowsIndent]
+
+        let rowsHeaders = ["A", "B", "C", "D", "E", "F", "G", "H"]
+        let rowsString = NSMutableAttributedString(string: "ROWS\n", attributes: boldAttrs)
+        for (i, row) in garden.rows.enumerated() {
+            for (j, entry) in row.enumerated() {
+                let header = NSAttributedString(string: "\(rowsHeaders[i])\(j + 1). ", attributes: boldAttrs)
+                let clue = md.parse("\(entry.clue)\n")
+                rowsString.append(header)
+                rowsString.append(clue)
+            }
+        }
+        rowsString.addAttributes(rowsIndentAttrs, range: NSRange(location: 0, length: rowsString.length))
+
+        let bloomsIndent = NSMutableParagraphStyle()
+        bloomsIndent.headIndent = 8
+        let bloomsIndentAttrs = [ NSAttributedString.Key.paragraphStyle: bloomsIndent]
+
+        let bloomsString = NSMutableAttributedString(string: "\nLIGHT\n", attributes: boldAttrs)
+        let light = sortHard(garden.light)
+        for clue in light {
+            let parsed = NSMutableAttributedString(attributedString: md.parse("• \(clue)\n"))
+            parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
+            bloomsString.append(parsed)
+        }
+        bloomsString.append(NSAttributedString(string: "\nMEDIUM\n", attributes: boldAttrs))
+        let medium = sortHard(garden.medium)
+        for clue in medium {
+            let parsed = NSMutableAttributedString(attributedString: md.parse("• \(clue)\n"))
+            parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
+            bloomsString.append(parsed)
+        }
+        bloomsString.append(NSAttributedString(string: "\nDARK\n", attributes: boldAttrs))
+        let dark = sortHard(garden.dark)
+        for clue in dark {
+            let parsed = NSMutableAttributedString(attributedString: md.parse("• \(clue)\n"))
+            parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
+            bloomsString.append(parsed)
+        }
+
+        rowsString.append(bloomsString)
+        let cluesFramesetter = CTFramesetterCreateWithAttributedString(rowsString as CFAttributedString)
+        let leftFrame = CTFramesetterCreateFrame(cluesFramesetter, CFRange(location: 0, length: 0), leftPath, nil)
+        CTFrameDraw(leftFrame, context)
+        let frameRange = CTFrameGetVisibleStringRange(leftFrame)
+        let rightFrame = CTFramesetterCreateFrame(cluesFramesetter, CFRange(location: frameRange.length, length: 0), rightPath, nil)
+        CTFrameDraw(rightFrame, context)
+
+        context.endPDFPage()
+        context.closePDF()
+
     }
 
     func sortHard(_ array: [RowsGarden.Entry]) -> [String] {
