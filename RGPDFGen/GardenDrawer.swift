@@ -3,6 +3,7 @@
 import Foundation
 import CoreGraphics
 import CoreText
+import AppKit
 
 struct GardenDrawer {
     static func drawGarden(context: CGContext, rect: CGRect) {
@@ -34,19 +35,28 @@ struct GardenDrawer {
             let r = CGRect(x: x, y: y , width: w * 0.75, height: w * 0.75)
             let path = CGPath(ellipseIn: r, transform: nil)
             context.addPath(path)
-            context.fillPath()
+            //context.fillPath()
             let r2 = CGRect(x: x + (w * 0.25), y: y + (w * 0.25), width: rect.width - (w * 0.25), height: h * 0.25)
             let path2 = CGPath(rect: r2, transform: nil)
             context.addPath(path2)
             context.fillPath()
-            let titleString = NSMutableAttributedString(string: headers[row], attributes: [:])
+            let letter = headers[row]
+            let attributes = [
+                NSAttributedString.Key.font : NSFont(name: "HelveticaNeue-Bold", size: 16)!,
+                NSAttributedString.Key.foregroundColor : NSColor.white
+            ]
+            let stringSize = letter.size(withAttributes: attributes)
+            let titleString = NSAttributedString(string: letter, attributes: attributes)
             let path3 = CGMutablePath()
-            path3.addRect(r)
+            let newR = CGRect(x: r.origin.x + ((r.width - stringSize.width) / 2), y: r.origin.y - ((r.height - stringSize.height) / 2), width: r.width, height: r.height)
+            path3.addRect(newR)
             let framesetter = CTFramesetterCreateWithAttributedString(titleString as CFAttributedString)
             let frame = CTFramesetterCreateFrame(framesetter, CFRange(location: 0, length: titleString.length), path3, nil)
             CTFrameDraw(frame, context)
+            context.setFillColor(stroke)
             y = y + h
         }
+        context.setStrokeColor(stroke)
         y = rect.origin.y
         for row in 0..<8 {
             if row == 0 {
