@@ -11,7 +11,8 @@ import MarkdownKit
 struct RGPDFGen: ParsableCommand {
     @Option(name: [.short, .customLong("input")], help: "Input file path") var inputFile: String
     @Option(name: [.short, .customLong("output")], help: "Output file path") var outputFile: String
-    @Option(name: [.short, .customLong("easy")], help: "Is easy level puzzle") var easy: Bool = true
+    @Flag(name: [.short, .customLong("easy")], help: "Is easy level puzzle") var easy = false
+    @Option(name: [.short, .customLong("fontsize")], help: "Clue font size") var fontSize: Int = 12
 
     mutating func run() throws {
         let expandedInput = (inputFile as NSString).expandingTildeInPath
@@ -52,16 +53,18 @@ struct RGPDFGen: ParsableCommand {
             let titleFrame = CTFramesetterCreateFrame(titleFramesetter, CFRange(location: 0, length: 0), path, nil)
             CTFrameDraw(titleFrame, context)
         }
-        
+
+        let clueFontSize = CGFloat(fontSize)
+
         let boldAttrs = [
-            NSAttributedString.Key.font : NSFont(name: "HelveticaNeue-Bold", size: 12)!
+            NSAttributedString.Key.font : NSFont(name: "HelveticaNeue-Bold", size: clueFontSize)!
         ]
         let leftPath = CGMutablePath()
         leftPath.addRect(CGRect(x: 32, y: 64, width: (w - 64) / 2 , height: 360 - 32).insetBy(dx: 8, dy: 0))
         let rightPath = CGMutablePath()
         rightPath.addRect(CGRect(x: 32 + ((w - 64) / 2), y: 64, width: (w - 64) / 2 , height: 360 - 32).insetBy(dx: 8, dy: 0))
 
-        let md = MarkdownParser(font: NSFont(name: "HelveticaNeue", size: 12)!)
+        let md = MarkdownParser(font: NSFont(name: "HelveticaNeue", size: clueFontSize)!)
         let rowsIndent = NSMutableParagraphStyle()
         rowsIndent.headIndent = 24
         rowsIndent.tabStops = [NSTextTab(type: .leftTabStopType, location: 24)]
@@ -71,8 +74,9 @@ struct RGPDFGen: ParsableCommand {
         let rowsString = NSMutableAttributedString(string: "ROWS\n", attributes: boldAttrs)
         for (i, row) in garden.rows.enumerated() {
             for (j, entry) in row.enumerated() {
+                let expanded = entry.expandClue()
                 let header = NSAttributedString(string: "\(rowsHeaders[i])\(j + 1).\t", attributes: boldAttrs)
-                let clue = md.parse("\(entry.clue)\n")
+                let clue = md.parse("\(expanded.clue)\n")
                 rowsString.append(header)
                 rowsString.append(clue)
             }
@@ -85,21 +89,21 @@ struct RGPDFGen: ParsableCommand {
         let bloomsIndentAttrs = [NSAttributedString.Key.paragraphStyle: bloomsIndent]
 
         let bloomsString = NSMutableAttributedString(string: "\nLIGHT\n", attributes: boldAttrs)
-        let light = sortHard(garden.light)
+        let light = sortHard(garden.light.map { $0.expandClue() })
         for clue in light {
             let parsed = NSMutableAttributedString(attributedString: md.parse("•\t\(clue)\n"))
             parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
             bloomsString.append(parsed)
         }
         bloomsString.append(NSAttributedString(string: "\nMEDIUM\n", attributes: boldAttrs))
-        let medium = sortHard(garden.medium)
+        let medium = sortHard(garden.medium.map { $0.expandClue() })
         for clue in medium {
             let parsed = NSMutableAttributedString(attributedString: md.parse("•\t\(clue)\n"))
             parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
             bloomsString.append(parsed)
         }
         bloomsString.append(NSAttributedString(string: "\nDARK\n", attributes: boldAttrs))
-        let dark = sortHard(garden.dark)
+        let dark = sortHard(garden.dark.map { $0.expandClue() })
         for clue in dark {
             let parsed = NSMutableAttributedString(attributedString: md.parse("•\t\(clue)\n"))
             parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
@@ -138,5 +142,24 @@ struct RuntimeError: Error, CustomStringConvertible {
     var description: String
     init(_ description: String) {
         self.description = description
+    }
+}
+
+extension RowsGarden.Entry {
+    func expandClue() -> RowsGarden.Entry {
+        var expanded = clue
+        let answerArray = answer.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: " ")
+        print(answerArray.count)
+        if answerArray.count > 1 {
+            expanded += " (\(answerArray.count) wds."
+            if answer.contains("-") {
+                expanded += ", hyph.)"
+            } else {
+                expanded += ")"
+            }
+        } else if answer.contains("-") {
+            expanded += " (hyph.)"
+        }
+        return RowsGarden.Entry(clue: expanded, answer: answer)
     }
 }
