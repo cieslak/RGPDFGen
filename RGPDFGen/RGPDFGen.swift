@@ -88,6 +88,7 @@ struct RGPDFGen: ParsableCommand {
             let light = sortHard(garden.light)
             for clue in light {
                 let parsed = NSMutableAttributedString(attributedString: md.parse("• \(clue)\n"))
+                parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
                 bloomString.append(parsed)
             }
             bloomString.append(NSAttributedString(string: "MEDIUM\n", attributes: boldAttrs))
@@ -101,6 +102,7 @@ struct RGPDFGen: ParsableCommand {
             let dark = sortHard(garden.dark)
             for clue in dark {
                 let parsed = NSMutableAttributedString(attributedString: md.parse("• \(clue)\n"))
+                parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
                 bloomString.append(parsed)
             }
 

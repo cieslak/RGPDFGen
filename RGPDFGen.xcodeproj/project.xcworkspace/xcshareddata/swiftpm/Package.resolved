@@ -1,6 +1,15 @@
 {
-  "originHash" : "22b1deb926b37e1b5c5f4a9ff5920d2d005da257cdc590e20e327d52943e5718",
+  "originHash" : "63cb2d03881bc1924a36a0f1b5c1f157100962d674c0fc35fdbb7068a2515eed",
   "pins" : [
+    {
+      "identity" : "markdownkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/bmoliveira/MarkdownKit.git",
+      "state" : {
+        "revision" : "5056f3305d3499f44d8815530d560b87082e0cf5",
+        "version" : "1.7.1"
+      }
+    },
     {
       "identity" : "swift-argument-parser",
       "kind" : "remoteSourceControl",
