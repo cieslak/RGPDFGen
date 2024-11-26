@@ -42,7 +42,7 @@ struct GardenDrawer {
             context.fillPath()
             let letter = headers[row]
             let attributes = [
-                NSAttributedString.Key.font : NSFont(name: "HelveticaNeue-Bold", size: 16)!,
+                NSAttributedString.Key.font : NSFont(name: "HighwayGothic", size: 20)!,
                 NSAttributedString.Key.foregroundColor : NSColor.white
             ]
             let stringSize = letter.size(withAttributes: attributes)
