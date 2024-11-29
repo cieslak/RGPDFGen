@@ -12,7 +12,7 @@ struct RGPDFGen: ParsableCommand {
     @Option(name: [.short, .customLong("input")], help: "Input file path") var inputFile: String
     @Option(name: [.short, .customLong("output")], help: "Output file path") var outputFile: String
     @Flag(name: [.short, .customLong("easy")], help: "Is easy level puzzle") var easy = false
-    @Option(name: [.short, .customLong("fontsize")], help: "Clue font size") var fontSize: Int = 12
+    @Option(name: [.short, .customLong("fontsize")], help: "Clue font size") var fontSize: String = "12"
 
     mutating func run() throws {
         let expandedInput = (inputFile as NSString).expandingTildeInPath
@@ -54,7 +54,10 @@ struct RGPDFGen: ParsableCommand {
             CTFrameDraw(titleFrame, context)
         }
 
-        let clueFontSize = CGFloat(fontSize)
+        guard let fontAsDouble = Double(fontSize) else {
+            throw RuntimeError("Invaild font size")
+        }
+        let clueFontSize = CGFloat(fontAsDouble)
 
         let boldAttrs = [
             NSAttributedString.Key.font : NSFont(name: "HelveticaNeue-Bold", size: clueFontSize)!
@@ -149,7 +152,6 @@ extension RowsGarden.Entry {
     func expandClue() -> RowsGarden.Entry {
         var expanded = clue
         let answerArray = answer.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: " ")
-        print(answerArray.count)
         if answerArray.count > 1 {
             expanded += " (\(answerArray.count) wds."
             if answer.contains("-") {
