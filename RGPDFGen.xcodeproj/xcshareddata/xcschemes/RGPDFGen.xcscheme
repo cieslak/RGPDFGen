@@ -53,7 +53,11 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-i ~/Desktop/1142.rg"
+            argument = "-i /Users/cjc/Library/Mobile\ Documents/com\~apple\~CloudDocs/tbfu5.rgz"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-e"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

@@ -10,6 +10,7 @@
 		2B53D4612CC5E97A000C59CB /* Yams in Frameworks */ = {isa = PBXBuildFile; productRef = 2B53D4602CC5E97A000C59CB /* Yams */; };
 		2B53D4682CC5EAFE000C59CB /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 2B53D4672CC5EAFE000C59CB /* ArgumentParser */; };
 		2B53D46D2CC6EC36000C59CB /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 2B53D46C2CC6EC36000C59CB /* ZIPFoundation */; };
+		2BF6B2132CF645370067CEB1 /* MarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2BF6B2122CF645370067CEB1 /* MarkdownKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -43,6 +44,7 @@
 			files = (
 				2B53D4682CC5EAFE000C59CB /* ArgumentParser in Frameworks */,
 				2B53D4612CC5E97A000C59CB /* Yams in Frameworks */,
+				2BF6B2132CF645370067CEB1 /* MarkdownKit in Frameworks */,
 				2B53D46D2CC6EC36000C59CB /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -89,6 +91,7 @@
 				2B53D4602CC5E97A000C59CB /* Yams */,
 				2B53D4672CC5EAFE000C59CB /* ArgumentParser */,
 				2B53D46C2CC6EC36000C59CB /* ZIPFoundation */,
+				2BF6B2122CF645370067CEB1 /* MarkdownKit */,
 			);
 			productName = RGPDFGen;
 			productReference = 2B53D4552CC5E966000C59CB /* RGPDFGen */;
@@ -122,6 +125,7 @@
 				2B53D45F2CC5E97A000C59CB /* XCRemoteSwiftPackageReference "Yams" */,
 				2B53D4662CC5EAFE000C59CB /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
 				2B53D46B2CC6EC36000C59CB /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+				2BF6B2112CF645370067CEB1 /* XCRemoteSwiftPackageReference "MarkdownKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2B53D4562CC5E966000C59CB /* Products */;
@@ -328,6 +332,14 @@
 				minimumVersion = 0.9.19;
 			};
 		};
+		2BF6B2112CF645370067CEB1 /* XCRemoteSwiftPackageReference "MarkdownKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/bmoliveira/MarkdownKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.7.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -345,6 +357,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2B53D46B2CC6EC36000C59CB /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
+		};
+		2BF6B2122CF645370067CEB1 /* MarkdownKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2BF6B2112CF645370067CEB1 /* XCRemoteSwiftPackageReference "MarkdownKit" */;
+			productName = MarkdownKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
