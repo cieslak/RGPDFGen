@@ -62,6 +62,9 @@ struct RGPDFGen: ParsableCommand {
         let boldAttrs = [
             NSAttributedString.Key.font : NSFont(name: "HelveticaNeue-Bold", size: clueFontSize)!
         ]
+        let italicAttrs = [
+            NSAttributedString.Key.font : NSFont(name: "HelveticaNeue-Italic", size: clueFontSize)!
+        ]
         let leftPath = CGMutablePath()
         leftPath.addRect(CGRect(x: 32, y: 64, width: (w - 64) / 2 , height: 360 - 32).insetBy(dx: 8, dy: 0))
         let rightPath = CGMutablePath()
@@ -74,7 +77,12 @@ struct RGPDFGen: ParsableCommand {
         let rowsIndentAttrs = [NSAttributedString.Key.paragraphStyle: rowsIndent]
 
         let rowsHeaders = ["A", "B", "C", "D", "E", "F", "G", "H"]
-        let rowsString = NSMutableAttributedString(string: "ROWS\n", attributes: boldAttrs)
+        let cluesString = NSMutableAttributedString()
+        if let notes = garden.notes {
+            cluesString.append(NSAttributedString(string: "Note: \(notes)\n\n", attributes: italicAttrs))
+        }
+        let rowsString = NSMutableAttributedString()
+        rowsString.append(NSMutableAttributedString(string: "ROWS\n", attributes: boldAttrs))
         for (i, row) in garden.rows.enumerated() {
             for (j, entry) in row.enumerated() {
                 let expanded = entry.expandClue()
@@ -112,9 +120,9 @@ struct RGPDFGen: ParsableCommand {
             parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
             bloomsString.append(parsed)
         }
-
-        rowsString.append(bloomsString)
-        let cluesFramesetter = CTFramesetterCreateWithAttributedString(rowsString as CFAttributedString)
+        cluesString.append(rowsString)
+        cluesString.append(bloomsString)
+        let cluesFramesetter = CTFramesetterCreateWithAttributedString(cluesString as CFAttributedString)
         let leftFrame = CTFramesetterCreateFrame(cluesFramesetter, CFRange(location: 0, length: 0), leftPath, nil)
         CTFrameDraw(leftFrame, context)
         let frameRange = CTFrameGetVisibleStringRange(leftFrame)
