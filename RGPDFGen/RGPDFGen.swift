@@ -19,6 +19,10 @@ struct RGPDFGen: ParsableCommand {
         guard let garden = RGParser.parse(filePath: expandedInput) else {
             throw RuntimeError("Couldn't parse '\(expandedInput)'")
         }
+        guard let fontAsDouble = Double(fontSize) else {
+            throw RuntimeError("Invalid font size")
+        }
+        let clueFontSize = CGFloat(fontAsDouble)
         let outURL = URL(fileURLWithPath: (outputFile as NSString).expandingTildeInPath)
         try? FileManager.default.removeItem(at: outURL)
         let w = 612.0,
@@ -53,11 +57,6 @@ struct RGPDFGen: ParsableCommand {
             let titleFrame = CTFramesetterCreateFrame(titleFramesetter, CFRange(location: 0, length: 0), path, nil)
             CTFrameDraw(titleFrame, context)
         }
-
-        guard let fontAsDouble = Double(fontSize) else {
-            throw RuntimeError("Invaild font size")
-        }
-        let clueFontSize = CGFloat(fontAsDouble)
 
         let boldAttrs = [
             NSAttributedString.Key.font : NSFont(name: "HelveticaNeue-Bold", size: clueFontSize)!
@@ -103,23 +102,21 @@ struct RGPDFGen: ParsableCommand {
         let light = sortHard(garden.light.map { $0.expandClue() })
         for clue in light {
             let parsed = NSMutableAttributedString(attributedString: md.parse("•\t\(clue)\n"))
-            parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
             bloomsString.append(parsed)
         }
         bloomsString.append(NSAttributedString(string: "\nMEDIUM\n", attributes: boldAttrs))
         let medium = sortHard(garden.medium.map { $0.expandClue() })
         for clue in medium {
             let parsed = NSMutableAttributedString(attributedString: md.parse("•\t\(clue)\n"))
-            parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
             bloomsString.append(parsed)
         }
         bloomsString.append(NSAttributedString(string: "\nDARK\n", attributes: boldAttrs))
         let dark = sortHard(garden.dark.map { $0.expandClue() })
         for clue in dark {
             let parsed = NSMutableAttributedString(attributedString: md.parse("•\t\(clue)\n"))
-            parsed.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: parsed.length))
             bloomsString.append(parsed)
         }
+        bloomsString.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: bloomsString.length))
         cluesString.append(rowsString)
         cluesString.append(bloomsString)
         let cluesFramesetter = CTFramesetterCreateWithAttributedString(cluesString as CFAttributedString)
