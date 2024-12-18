@@ -84,9 +84,11 @@ struct RGPDFGen: ParsableCommand {
         rowsString.append(NSMutableAttributedString(string: "ROWS\n", attributes: boldAttrs))
         for (i, row) in garden.rows.enumerated() {
             for (j, entry) in row.enumerated() {
-                let expanded = entry.expandClue()
+                var expandedClue = entry.expandClue().clue
+                expandedClue = expandedClue.replacingOccurrences(of: "_*", with: "_\u{115F}*")
+                expandedClue = expandedClue.replacingOccurrences(of: "*_", with: "*\u{115F}_")
                 let header = NSAttributedString(string: "\(rowsHeaders[i])\(j + 1).\t", attributes: boldAttrs)
-                let clue = md.parse("\(expanded.clue)\n")
+                let clue = md.parse("\(expandedClue)\n")
                 rowsString.append(header)
                 rowsString.append(clue)
             }
@@ -101,19 +103,29 @@ struct RGPDFGen: ParsableCommand {
         let bloomsString = NSMutableAttributedString(string: "\nLIGHT\n", attributes: boldAttrs)
         let light = sortHard(garden.light.map { $0.expandClue() })
         for clue in light {
-            let parsed = NSMutableAttributedString(attributedString: md.parse("•\t\(clue)\n"))
+            var expandedClue = clue
+            // Add an invisible character to parse markdown correctly
+            expandedClue = expandedClue.replacingOccurrences(of: "_*", with: "_\u{115F}*")
+            expandedClue = expandedClue.replacingOccurrences(of: "*_", with: "*\u{115F}_")
+            let parsed = NSMutableAttributedString(attributedString: md.parse("•\t\(expandedClue)\n"))
             bloomsString.append(parsed)
         }
         bloomsString.append(NSAttributedString(string: "\nMEDIUM\n", attributes: boldAttrs))
         let medium = sortHard(garden.medium.map { $0.expandClue() })
         for clue in medium {
-            let parsed = NSMutableAttributedString(attributedString: md.parse("•\t\(clue)\n"))
+            var expandedClue = clue
+            expandedClue = expandedClue.replacingOccurrences(of: "_*", with: "_\u{115F}*")
+            expandedClue = expandedClue.replacingOccurrences(of: "*_", with: "*\u{115F}_")
+            let parsed = NSMutableAttributedString(attributedString: md.parse("•\t\(expandedClue)\n"))
             bloomsString.append(parsed)
         }
         bloomsString.append(NSAttributedString(string: "\nDARK\n", attributes: boldAttrs))
         let dark = sortHard(garden.dark.map { $0.expandClue() })
         for clue in dark {
-            let parsed = NSMutableAttributedString(attributedString: md.parse("•\t\(clue)\n"))
+            var expandedClue = clue
+            expandedClue = expandedClue.replacingOccurrences(of: "_*", with: "_\u{115F}*")
+            expandedClue = expandedClue.replacingOccurrences(of: "*_", with: "*\u{115F}_")
+            let parsed = NSMutableAttributedString(attributedString: md.parse("•\t\(expandedClue)\n"))
             bloomsString.append(parsed)
         }
         bloomsString.addAttributes(bloomsIndentAttrs, range: NSRange(location: 0, length: bloomsString.length))

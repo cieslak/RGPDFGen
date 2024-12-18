@@ -53,15 +53,19 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-i /Users/cjc/Library/Mobile\ Documents/com\~apple\~CloudDocs/tbfu5.rgz"
+            argument = "-i /Users/cjc/Library/Mobile\ Documents/com\~apple\~CloudDocs/tbfu9.rgz"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-f 10.5"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-e"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-o ~/Desktop/rb.pdf"
+            argument = "-o ~/Desktop/tbfu9-l.pdf"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
