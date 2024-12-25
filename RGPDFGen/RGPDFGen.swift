@@ -9,10 +9,11 @@ import MarkdownKit
 
 @main
 struct RGPDFGen: ParsableCommand {
-    @Option(name: [.short, .customLong("input")], help: "Input file path") var inputFile: String
-    @Option(name: [.short, .customLong("output")], help: "Output file path") var outputFile: String
-    @Flag(name: [.short, .customLong("easy")], help: "Is easy level puzzle") var easy = false
-    @Option(name: [.short, .customLong("fontsize")], help: "Clue font size") var fontSize: String = "12"
+    @Option(name: [.short, .customLong("input")], help: "Input file path.") var inputFile: String
+    @Option(name: [.short, .customLong("output")], help: "Output file path.") var outputFile: String
+    @Flag(name: [.short, .customLong("easy")], help: "Sort clues in easy mode.") var easy = false
+    @Option(name: [.short, .customLong("fontsize")], help: "Clue font size.") var fontSize: String = "12"
+    static var configuration = CommandConfiguration(commandName: "rgpdfgen")
 
     mutating func run() throws {
         let expandedInput = (inputFile as NSString).expandingTildeInPath
